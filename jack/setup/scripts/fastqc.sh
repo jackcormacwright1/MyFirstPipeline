@@ -1,13 +1,13 @@
 #!/bin/bash
 
 if [[ $# -ne 5 ]]; then
-    printf 'Usage: fastqc.sh FASTQ_DIR WORK_DIR FASTQC_THREADS METADATA_FILE MODE\n' >&2
+    printf 'Usage: fastqc.sh FASTQ_DIR WORK_DIR THREADS METADATA_FILE MODE\n' >&2
     exit 1
 fi
 
 FASTQ_DIR="$1"
 WORK_DIR="$2"
-FASTQC_THREADS="$3"
+THREADS="$3"
 METADATA_FILE="$4"
 MODE="$5"
 
@@ -15,12 +15,12 @@ EXPECTED_FILES="$WORK_DIR/prepare_inputs/expected_files.txt"
 
 
 if [[ "$MODE" == "interactive" ]]; then
-    printf '\nFastQC threads are set to %s.\n' "$FASTQC_THREADS" >&2
+    printf '\nFastQC threads are set to %s.\n' "$THREADS" >&2
     printf 'Enter a new value, or press Enter to keep this setting: ' >&2
     read override
 
     if [[ -n "$override" ]]; then
-        FASTQC_THREADS="$override"
+        THREADS="$override"
     fi
 fi
 
@@ -44,7 +44,7 @@ if [[ "$MODE" == "interactive" ]]; then
     printf '\n\033[1;33mProcessing FASTQ files using FastQC' >&2
 fi
 
-fastqc --quiet --threads "$FASTQC_THREADS" \
+fastqc --quiet --threads "$THREADS" \
     --outdir "$FASTQC_REPORT_DIR" "${fastqc_files[@]}" \
     > "$FASTQC_RUN_DIR/fastqc.log" 2>&1 &
 
@@ -186,7 +186,9 @@ printf 'Paired metrics: %s/paired_metrics.tsv\n' "$FASTQC_EXTRACT_DIR"
 
 
 
-
+# Assess the outputs from this FastQC run.
+bash ./scripts/assess_fastqc.sh \
+    "$METADATA_FILE" "$FASTQC_EXTRACT_DIR" || exit 1
 
 
 

@@ -79,12 +79,12 @@ fi
 
 if [[ "$MODE" == "interactive" ]]; then
     bash ./scripts/fastqc.sh \
-        "$FASTQ_DIR" "$WORK_DIR" "$FASTQC_THREADS" \
+        "$FASTQ_DIR" "$WORK_DIR" "$THREADS" \
         "$METADATA_FILE" "$MODE" |
         tee -a "$QUALITY_REPORT"
 else
     bash ./scripts/fastqc.sh \
-        "$FASTQ_DIR" "$WORK_DIR" "$FASTQC_THREADS" \
+        "$FASTQ_DIR" "$WORK_DIR" "$THREADS" \
         "$METADATA_FILE" "$MODE" \
         >> "$QUALITY_REPORT"
 fi

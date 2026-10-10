@@ -7,7 +7,7 @@ WORK_DIR="./work"
 GENOME_FASTA="../Tcongo_genome/TriTrypDB-46_TcongolenseIL3000_2019_Genome.fasta.gz"
 GENE_BED="../TriTrypDB-46_TcongolenseIL3000_2019.bed"
 
-FASTQC_THREADS=4
+THREADS=4
 
 # Choose interactive or quiet mode
 MODE="interactive"
