@@ -184,7 +184,9 @@ printf 'Summaries: %s/combined_summaries.txt\n' "$FASTQC_EXTRACT_DIR"
 printf 'Metrics: %s/combined_metrics.txt\n' "$FASTQC_EXTRACT_DIR"
 printf 'Paired metrics: %s/paired_metrics.tsv\n' "$FASTQC_EXTRACT_DIR"
 
-
+# Record this successful run for the next pipeline stage.
+printf '%s\n' "$FASTQC_EXTRACT_DIR" \
+    > "$WORK_DIR/current_fastqc_extract_dir.txt" || exit 1
 
 # Assess the outputs from this FastQC run.
 bash ./scripts/assess_fastqc.sh \

@@ -1,4 +1,4 @@
-#!/bin/bashl
+#!/bin/bash
 
 source ./config.txt
 
@@ -89,22 +89,79 @@ else
         >> "$QUALITY_REPORT"
 fi
 
-{
-    printf '\n```\n\n'
-    printf 'Input checks and FastQC collection completed successfully.\n\n'
-} >> "$QUALITY_REPORT"
+# Close the FastQC section in the Markdown report.
+printf '\n```\n\n' >> "$QUALITY_REPORT"
 
 if [[ "$MODE" == "interactive" ]]; then
-    printf '\n\033[1;32m✅ Input checks and FastQC collection complete.\033[0m\n'
+    printf '\n\033[1;32m✅ FastQC collection and sample assessment complete.\033[0m\n'
+    printf 'Press Enter to continue to alignment, or Ctrl+C to stop: '
+    read
+    printf '\n'
+fi
+
+# Read the directory recorded by the successful FastQC stage.
+FASTQC_EXTRACT_DIR=$(cat "$WORK_DIR/current_fastqc_extract_dir.txt") || exit 1
+
+if [[ "$MODE" == "interactive" ]]; then
+    printf '\n\033[1;36m'
+    printf '%s\n' \
+        '--------------------------------------------------' \
+        '  03 — ALIGN READS TO THE GENOME' \
+        '--------------------------------------------------'
+    printf '\033[0m\n'
+fi
+
+printf '## Genome alignment\n\n```text\n' >> "$QUALITY_REPORT"
+
+if [[ "$MODE" == "interactive" ]]; then
+    bash ./scripts/align_reads.sh \
+        "$FASTQC_EXTRACT_DIR/alignment_samples.tsv" |
+        tee -a "$QUALITY_REPORT"
+else
+    bash ./scripts/align_reads.sh \
+        "$FASTQC_EXTRACT_DIR/alignment_samples.tsv" \
+        >> "$QUALITY_REPORT"
+fi
+
+printf '\n```\n\n' >> "$QUALITY_REPORT"
+
+if [[ "$MODE" == "interactive" ]]; then
+    printf '\n\033[1;32m✅ Genome alignment complete.\033[0m\n'
+    printf 'Press Enter to continue to gene counting, or Ctrl+C to stop: '
+    read
+    printf '\n'
+fi
+
+# Read the directory recorded by the successful alignment stage.
+ALIGN_DIR=$(cat "$WORK_DIR/current_alignment_dir.txt") || exit 1
+
+if [[ "$MODE" == "interactive" ]]; then
+    printf '\n\033[1;36m'
+    printf '%s\n' \
+        '--------------------------------------------------' \
+        '  04 — COUNT READ ALIGNMENTS OVERLAPPING GENES' \
+        '--------------------------------------------------'
+    printf '\033[0m\n'
+fi
+
+printf '## Gene counts\n\n```text\n' >> "$QUALITY_REPORT"
+
+if [[ "$MODE" == "interactive" ]]; then
+    bash ./scripts/count_genes.sh "$ALIGN_DIR" |
+        tee -a "$QUALITY_REPORT"
+else
+    bash ./scripts/count_genes.sh "$ALIGN_DIR" \
+        >> "$QUALITY_REPORT"
+fi
+
+if [[ "$MODE" == "interactive" ]]; then
+    printf '\n\033[1;32m✅ Labelled genes counted.\033[0m\n'
 fi
 
 printf 'Report saved at: %s\n' "$QUALITY_REPORT"
-
+printf 'Gene counts saved at: %s/counts\n' "$ALIGN_DIR"
 
 if [[ "$MODE" == "interactive" ]]; then
-    printf '\nPress Enter to continue to quality assessment: '
+    printf '\nPress Enter to continue: '
     read
 fi
-
-
-

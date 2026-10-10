@@ -119,4 +119,6 @@ done < "$ALIGN_DIR/samples.tsv"
 printf '\nAlignment completed for %d samples.\n' "$sample_count"
 printf 'Results directory: %s\n' "$ALIGN_DIR"
 
-
+# Record this successful run for gene counting.
+printf '%s\n' "$ALIGN_DIR" \
+    > "$WORK_DIR/current_alignment_dir.txt" || exit 1
