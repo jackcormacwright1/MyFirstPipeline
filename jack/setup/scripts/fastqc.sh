@@ -11,6 +11,7 @@ THREADS="$3"
 METADATA_FILE="$4"
 MODE="$5"
 
+# pick up the list of files for looping
 EXPECTED_FILES="$WORK_DIR/prepare_inputs/expected_files.txt"
 
 
